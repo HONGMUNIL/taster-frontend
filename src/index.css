@@ -85,3 +85,34 @@ a {
   flex-direction: column;
   gap: 12px;
 }
+
+.ranking-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rank-badge {
+  display: inline-block;
+  min-width: 52px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background-color: #111;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+
+.place-name {
+  font-size: 18px;
+}
+
+.ranking-meta {
+  margin-bottom: 14px;
+}
+
+.ranking-meta p {
+  margin: 6px 0;
+  color: #444;
+}

@@ -23,6 +23,17 @@ export default function RankingPage() {
     fetchRanking();
   }, []);
 
+  function formatScore(score) {
+    return Number(score).toFixed(2);
+  }
+
+  function formatRating(rating) {
+    if (rating === null || rating === undefined) {
+      return "없음";
+    }
+    return Number(rating).toFixed(1);
+  }
+
   if (loading) {
     return (
       <section className="page">
@@ -44,7 +55,9 @@ export default function RankingPage() {
   return (
     <section className="page">
       <h2>맛집 랭킹</h2>
-      <p className="page-desc"> 실제 랭킹 데이터입니다.</p>
+      <p className="page-desc">
+        리뷰 수와 평균 평점을 함께 반영한 Taster 추천 순위입니다.
+      </p>
 
       <div className="ranking-list">
         {rankingList.length === 0 ? (
@@ -54,18 +67,20 @@ export default function RankingPage() {
         ) : (
           rankingList.map((place, index) => (
             <div key={place.place_id} className="ranking-item">
-              <div>
-                <strong>
-                  {index + 1}위. {place.place_name}
-                </strong>
-                <p>베이지안 점수: {place.bayes_score}</p>
-                <p>평균 평점: {place.avg_rating ?? "없음"}</p>
-                <p>리뷰 수: {place.review_count}</p>
-
-                <Link to={`/places/${place.place_id}`} className="button-link">
-                  상세 보기
-                </Link>
+              <div className="ranking-top">
+                <span className="rank-badge">{index + 1}위</span>
+                <strong className="place-name">{place.place_name}</strong>
               </div>
+
+              <div className="ranking-meta">
+                <p>Taster 점수: {formatScore(place.bayes_score)}</p>
+                <p>평균 평점: {formatRating(place.avg_rating)}</p>
+                <p>리뷰 수: {place.review_count}개</p>
+              </div>
+
+              <Link to={`/places/${place.place_id}`} className="button-link">
+                상세 보기
+              </Link>
             </div>
           ))
         )}
