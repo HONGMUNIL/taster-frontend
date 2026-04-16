@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function HomePage() {
     return (
         <section className= "page">
-            <h2>오사카 맛집을 찾는 가장 쉬운 방법</h2>
+            <h2> </h2>
             <p className="page-desc">
                 지역별 맛집, 랭킹, 리뷰를 한번에 확인하는 Taster
             </p>

@@ -1,16 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPlaceList } from "../api/place";
+import { getAreaList, getCategoryList, getPlaceList } from "../api/place";
 
 export default function PlacesPage() {
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [areas, setAreas] = useState([]);
+
+  const [selectedAreaId, setSelectedAreaId] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
 
   const [searchInput, setSearchInput] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
   const [sortBy, setSortBy] = useState("avg_rating");
   const [sortOrder, setSortOrder] = useState("desc");
+
+  useEffect(() => {
+    async function fetchFilterData() {
+      try{
+        const [areaData, categoryData] = await Promise.all([
+          getAreaList(),
+          getCategoryList(),
+        ]);
+        setAreas(areaData);
+        setCategories(categoryData);
+      } catch(err){
+        console.error("필터 목록 조회 실패:", err);
+      }
+    }
+    fetchFilterData();
+  }, []);
 
   useEffect(() => {
     async function fetchPlaces() {
@@ -20,6 +41,8 @@ export default function PlacesPage() {
       try {
         const data = await getPlaceList({
           q: searchKeyword || undefined,
+          area_id: selectedAreaId ? Number(selectedAreaId) : undefined,
+          category_id: selectedCategoryId ? Number(selectedCategoryId) : undefined,
           sort_by: sortBy,
           sort_order: sortOrder,
           limit: 20,
@@ -35,7 +58,7 @@ export default function PlacesPage() {
     }
 
     fetchPlaces();
-  }, [searchKeyword, sortBy, sortOrder]);
+  }, [searchKeyword, sortBy, sortOrder, selectedAreaId, selectedCategoryId]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -71,7 +94,7 @@ export default function PlacesPage() {
     <section className="page">
       <h2>가게 목록</h2>
       <p className="page-desc">
-        이름 검색과 정렬로 가게를 탐색할 수 있습니다.
+        이름 검색. 지역, 카테고리, 정렬로 가게를 탐색할 수 있습니다.
       </p>
 
       <form className="place-filter-form" onSubmit={handleSearchSubmit}>
@@ -82,6 +105,26 @@ export default function PlacesPage() {
           onChange={(event) => setSearchInput(event.target.value)}
         />
 
+
+        <select value={selectedAreaId} onChange={(event) => setSelectedAreaId(event.target.value)}>
+
+          <option value="">전체 지역</option>
+          {areas.map((area) => (
+            <option key={area.id} value={area.id}>
+              {area.name}
+            </option>
+          ))}
+        </select>
+
+        <select value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)}>
+
+          <optin value="">전체 카테고리</optin>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
         <select value={sortBy} onChange={(event) => setSortBy(event.target.value)}>
           <option value="avg_rating">평점순</option>
           <option value="review_count">리뷰 많은 순</option>

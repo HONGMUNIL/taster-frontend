@@ -5,11 +5,13 @@ export default function Layout({ children }) {
     <div className="app-shell">
       <header className="header">
         <div className="header-inner">
-          <h1 className="logo">Taster</h1>
+          <Link className ="logo" to="/">Taster</Link>
 
           <nav className="nav">
             <Link to="/">홈</Link>
+            <Link to="/places/new">등록</Link>
             <Link to="/ranking">랭킹</Link>
+            <Link to="/places">가게 목록</Link>
           </nav>
         </div>
       </header>
