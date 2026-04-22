@@ -6,11 +6,15 @@ export default function RankingPage() {
   const [rankingList, setRankingList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     async function fetchRanking() {
+      setLoading(true);
+      setError("");
+
       try {
-        const data = await getRankingList();
+        const data = await getRankingList(limit);
         setRankingList(data);
       } catch (err) {
         console.error("랭킹 조회 실패:", err);
@@ -21,7 +25,7 @@ export default function RankingPage() {
     }
 
     fetchRanking();
-  }, []);
+  }, [limit]);
 
   function formatScore(score) {
     return Number(score).toFixed(2);
@@ -32,6 +36,10 @@ export default function RankingPage() {
       return "없음";
     }
     return Number(rating).toFixed(1);
+  }
+
+  function handleLimitChange(event) {
+    setLimit(Number(event.target.value));
   }
 
   if (loading) {
@@ -58,6 +66,15 @@ export default function RankingPage() {
       <p className="page-desc">
         리뷰 수와 평균 평점을 함께 반영한 Taster 추천 순위입니다.
       </p>
+
+      <div className="filter-bar">
+        <label htmlFor="limit-select">표시 개수</label>
+        <select id="limit-select" value={limit} onChange={handleLimitChange}>
+          <option value={5}>5개</option>
+          <option value={10}>10개</option>
+          <option value={20}>20개</option>
+        </select>
+      </div>
 
       <div className="ranking-list">
         {rankingList.length === 0 ? (
