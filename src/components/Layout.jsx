@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { isLoggedIn } from "../api/auth";
+import { isLoggedIn, logout } from "../api/auth";
 
 export default function Layout({ children }) {
     const navigate = useNavigate();

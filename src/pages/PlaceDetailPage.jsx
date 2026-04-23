@@ -47,6 +47,22 @@ export default function PlaceDetailPage() {
     setReviews(reviewData);
   }
 
+  function getApiErrorMessage(err, fallbackMessage) {
+    if (err.response?.data?.detail) {
+      return err.response.data.detail;
+    }
+
+    if (err.response?.data?.error?.message) {
+      return err.response.data.error.message;
+    }
+
+    if (err.message) {
+      return err.message;
+    }
+
+    return fallbackMessage;
+  }
+
   useEffect(() => {
     async function fetchDetailData() {
       setLoading(true);
@@ -101,6 +117,8 @@ export default function PlaceDetailPage() {
     return review.author_email === currentUser.email;
   }
 
+  const myReview = reviews.find((review) => isMyReview(review));
+
   async function handleReviewSubmit(event) {
     event.preventDefault();
     setSubmitError("");
@@ -110,6 +128,11 @@ export default function PlaceDetailPage() {
 
     if (!token) {
       setSubmitError("로그인 후 리뷰를 작성할 수 있습니다.");
+      return;
+    }
+
+    if (myReview) {
+      setSubmitError("이 가게에는 리뷰를 1개만 작성할 수 있습니다. 기존 리뷰를 수정하거나 삭제해주세요.");
       return;
     }
 
@@ -136,7 +159,9 @@ export default function PlaceDetailPage() {
     } catch (err) {
       console.error("리뷰 작성 실패:", err);
 
-      if (err.response?.data?.detail) {
+      if (err.response?.status === 409) {
+        setSubmitError("이 가게에는 리뷰를 1개만 작성할 수 있습니다. 기존 리뷰를 수정하거나 삭제해주세요.");
+      } else if (err.response?.data?.detail) {
         setSubmitError(err.response.data.detail);
       } else {
         setSubmitError("리뷰 작성에 실패했습니다.");
@@ -151,6 +176,7 @@ export default function PlaceDetailPage() {
     setEditRating(String(review.rating));
     setEditBody(review.body ?? "");
     setEditError("");
+    setSubmitSuccess("");
   }
 
   function handleEditCancel() {
@@ -183,12 +209,7 @@ export default function PlaceDetailPage() {
       setSubmitSuccess("리뷰가 수정되었습니다.");
     } catch (err) {
       console.error("리뷰 수정 실패:", err);
-
-      if (err.response?.data?.detail) {
-        setEditError(err.response.data.detail);
-      } else {
-        setEditError("리뷰 수정에 실패했습니다.");
-      }
+      setEditError(getApiErrorMessage(err, "리뷰 수정에 실패했습니다."));
     } finally {
       setEditLoading(false);
     }
@@ -218,12 +239,7 @@ export default function PlaceDetailPage() {
       setSubmitSuccess("리뷰가 삭제되었습니다.");
     } catch (err) {
       console.error("리뷰 삭제 실패:", err);
-
-      if (err.response?.data?.detail) {
-        setSubmitError(err.response.data.detail);
-      } else {
-        setSubmitError("리뷰 삭제에 실패했습니다.");
-      }
+      setSubmitError(getApiErrorMessage(err, "리뷰 삭제에 실패했습니다."));
     } finally {
       setDeleteLoadingId(null);
     }
@@ -271,7 +287,19 @@ export default function PlaceDetailPage() {
       <section className="review-write-section">
         <h3>리뷰 작성</h3>
 
-        {isLoggedIn ? (
+        {!isLoggedIn ? (
+          <div className="card">
+            <p>리뷰 작성은 로그인 후 가능합니다.</p>
+            <Link to="/login" className="button-link">
+              로그인하러 가기
+            </Link>
+          </div>
+        ) : myReview ? (
+          <div className="card">
+            <p>이 가게에는 리뷰를 1개만 작성할 수 있습니다.</p>
+            <p>이미 작성한 리뷰가 있으니 아래에서 수정하거나 삭제해주세요.</p>
+          </div>
+        ) : (
           <form className="review-form" onSubmit={handleReviewSubmit}>
             <div className="form-group">
               <label htmlFor="review-rating">별점</label>
@@ -310,13 +338,6 @@ export default function PlaceDetailPage() {
               {submitLoading ? "등록 중..." : "리뷰 등록하기"}
             </button>
           </form>
-        ) : (
-          <div className="card">
-            <p>리뷰 작성은 로그인 후 가능합니다.</p>
-            <Link to="/login" className="button-link">
-              로그인하러 가기
-            </Link>
-          </div>
         )}
       </section>
 

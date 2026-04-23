@@ -118,7 +118,7 @@ export default function PlacesPage() {
 
         <select value={selectedCategoryId} onChange={(event) => setSelectedCategoryId(event.target.value)}>
 
-          <optin value="">전체 카테고리</optin>
+          <option value="">전체 카테고리</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}

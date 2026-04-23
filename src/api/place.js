@@ -9,8 +9,6 @@ export async function getPlaceList(params = {}) {
 }
 
 
-
-
 export async function getPlaceDetail(placeId) {
   const response = await client.get(`/places/${placeId}`);
   return response.data;    
