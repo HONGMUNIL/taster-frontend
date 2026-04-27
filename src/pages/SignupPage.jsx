@@ -42,9 +42,14 @@ export default function SignupPage() {
       return;
     }
 
-    if (password.length < 4) {
-      setError("비밀번호는 최소 4자 이상으로 입력해주세요.");
-      return;
+    if (password.length < 8) {
+        setError("비밀번호는 최소 8자 이상으로 입력해주세요.");
+         return;
+    }
+
+    if (password.length > 64) {
+         setError("비밀번호는 64자 이하로 입력해주세요.");
+          return;
     }
 
     if (password !== passwordCheck) {

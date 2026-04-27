@@ -35,7 +35,6 @@ a {
 .logo {
   margin: 0;
   font-size: 24px;
-  font-weight: 600;
 }
 
 .nav {
@@ -118,63 +117,159 @@ a {
   color: #444;
 }
 
-.place-filter-form {
+.filter-bar {
   display: flex;
+  align-items: center;
   gap: 12px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
 }
 
-.place-filter-form input,
-.place-filter-form select {
-  padding: 10px 12px;
+.filter-bar label {
+  font-weight: 600;
+}
+
+.filter-bar select {
+  padding: 8px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: white;
 }
 
-.place-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.place-card h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
-}
-
-.place-card p {
-  margin: 8px 0;
-}
-
-.place-create-form {
+.auth-form {
   max-width: 520px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.form-group {
+.auth-submit {
+  border: none;
+  cursor: pointer;
+}
+
+.auth-link-text {
+  margin: 0;
+  color: #555;
+}
+
+.nav-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.review-write-section {
+  margin-bottom: 24px;
+}
+
+.review-form {
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
 }
 
-.form-group label {
-  font-weight: 600;
-}
-
-.form-group input,
-.form-group select {
+.review-form textarea,
+.review-form select {
   padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: white;
+  font: inherit;
 }
 
-.form-error {
+.review-submit-button {
+  border: none;
+  cursor: pointer;
+}
+
+.form-success {
   margin: 0;
-  color: #d93025;
+  color: #188038;
   font-size: 14px;
 }
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card p {
+  margin: 8px 0;
+}
+
+.review-write-section {
+  margin-bottom: 24px;
+}
+
+.review-form,
+.review-edit-form {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-form textarea,
+.review-form select,
+.review-edit-form textarea,
+.review-edit-form select {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  font: inherit;
+}
+
+.review-submit-button {
+  border: none;
+  cursor: pointer;
+}
+
+.form-success {
+  margin: 0;
+  color: #188038;
+  font-size: 14px;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.review-card p {
+  margin: 8px 0;
+}
+
+.review-action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.secondary-button,
+.danger-button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.secondary-button {
+  background-color: #e9ecef;
+}
+
+.danger-button {
+  background-color: #d93025;
+  color: white;
+}
+
+.mypage-card {
+  margin-bottom: 24px;
+}
+

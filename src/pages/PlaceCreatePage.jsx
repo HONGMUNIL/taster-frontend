@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   createPlace,
   getAreaList,
   getCategoryList,
 } from "../api/place";
+
+const TOKEN_KEY = "access_token";
 
 export default function PlaceCreatePage() {
   const navigate = useNavigate();
@@ -20,47 +22,70 @@ export default function PlaceCreatePage() {
   const [initLoading, setInitLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-  async function fetchOptions() {
-    setError("");
+  const isLoggedIn = !!localStorage.getItem(TOKEN_KEY);
 
-    const [areaResult, categoryResult] = await Promise.allSettled([
-      getAreaList(),
-      getCategoryList(),
-    ]);
-
-    if (areaResult.status === "fulfilled") {
-      setAreas(areaResult.value);
-    } else {
-      console.error("지역 목록 조회 실패:", areaResult.reason);
+  function getApiErrorMessage(err, fallbackMessage) {
+    if (err.response?.data?.detail) {
+      return err.response.data.detail;
     }
 
-    if (categoryResult.status === "fulfilled") {
-      setCategories(categoryResult.value);
-    } else {
-      console.error("카테고리 목록 조회 실패:", categoryResult.reason);
+    if (err.response?.data?.error?.message) {
+      return err.response.data.error.message;
     }
 
-    if (
-      areaResult.status === "rejected" &&
-      categoryResult.status === "rejected"
-    ) {
-      setError("지역과 카테고리 목록을 불러오지 못했습니다.");
-    } else if (categoryResult.status === "rejected") {
-      setError("카테고리 목록을 불러오지 못했습니다. 우선 지역만 선택할 수 있습니다.");
-    } else if (areaResult.status === "rejected") {
-      setError("지역 목록을 불러오지 못했습니다.");
+    if (err.message) {
+      return err.message;
     }
 
-    setInitLoading(false);
+    return fallbackMessage;
   }
 
-  fetchOptions();
-}, []);
+  useEffect(() => {
+    async function fetchOptions() {
+      setError("");
+
+      const [areaResult, categoryResult] = await Promise.allSettled([
+        getAreaList(),
+        getCategoryList(),
+      ]);
+
+      if (areaResult.status === "fulfilled") {
+        setAreas(areaResult.value);
+      } else {
+        console.error("지역 목록 조회 실패:", areaResult.reason);
+      }
+
+      if (categoryResult.status === "fulfilled") {
+        setCategories(categoryResult.value);
+      } else {
+        console.error("카테고리 목록 조회 실패:", categoryResult.reason);
+      }
+
+      if (
+        areaResult.status === "rejected" &&
+        categoryResult.status === "rejected"
+      ) {
+        setError("지역과 카테고리 목록을 불러오지 못했습니다.");
+      } else if (categoryResult.status === "rejected") {
+        setError("카테고리 목록을 불러오지 못했습니다. 우선 지역만 선택할 수 있습니다.");
+      } else if (areaResult.status === "rejected") {
+        setError("지역 목록을 불러오지 못했습니다.");
+      }
+
+      setInitLoading(false);
+    }
+
+    fetchOptions();
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError("");
+
+    if (!isLoggedIn) {
+      setError("로그인한 사용자만 가게를 등록할 수 있습니다.");
+      return;
+    }
 
     if (!name.trim()) {
       setError("가게 이름을 입력해주세요.");
@@ -82,16 +107,10 @@ export default function PlaceCreatePage() {
       };
 
       const createdPlace = await createPlace(payload);
-
       navigate(`/places/${createdPlace.id}`);
     } catch (err) {
       console.error("가게 등록 실패:", err);
-
-      if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError("가게 등록에 실패했습니다.");
-      }
+      setError(getApiErrorMessage(err, "가게 등록에 실패했습니다."));
     } finally {
       setLoading(false);
     }
@@ -102,6 +121,24 @@ export default function PlaceCreatePage() {
       <section className="page">
         <h2>가게 등록</h2>
         <p className="page-desc">등록 화면을 준비하는 중입니다...</p>
+      </section>
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <section className="page">
+        <h2>가게 등록</h2>
+        <p className="page-desc">
+          가게 등록은 로그인한 사용자만 가능합니다.
+        </p>
+
+        <div className="card">
+          <p>먼저 로그인한 뒤 가게를 등록해주세요.</p>
+          <Link to="/login" className="button-link">
+            로그인하러 가기
+          </Link>
+        </div>
       </section>
     );
   }

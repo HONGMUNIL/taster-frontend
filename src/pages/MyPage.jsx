@@ -13,6 +13,30 @@ export default function MyPage() {
 
   const isLoggedIn = !!localStorage.getItem(TOKEN_KEY);
 
+  function formatDate(dateString) {
+    if (!dateString) {
+      return "날짜 없음";
+    }
+
+    return new Date(dateString).toLocaleString("ko-KR");
+  }
+
+  function getApiErrorMessage(err, fallbackMessage) {
+    if (err.response?.data?.detail) {
+      return err.response.data.detail;
+    }
+
+    if (err.response?.data?.error?.message) {
+      return err.response.data.error.message;
+    }
+
+    if (err.message) {
+      return err.message;
+    }
+
+    return fallbackMessage;
+  }
+
   useEffect(() => {
     async function fetchMyPageData() {
       setLoading(true);
@@ -32,12 +56,7 @@ export default function MyPage() {
         setMyReviews(reviewData);
       } catch (err) {
         console.error("마이페이지 조회 실패:", err);
-
-        if (err.response?.data?.detail) {
-          setError(err.response.data.detail);
-        } else {
-          setError("마이페이지 정보를 불러오지 못했습니다.");
-        }
+        setError(getApiErrorMessage(err, "마이페이지 정보를 불러오지 못했습니다."));
       } finally {
         setLoading(false);
       }
@@ -45,14 +64,6 @@ export default function MyPage() {
 
     fetchMyPageData();
   }, [isLoggedIn]);
-
-  function formatDate(dateString) {
-    if (!dateString) {
-      return "날짜 없음";
-    }
-
-    return new Date(dateString).toLocaleString("ko-KR");
-  }
 
   if (loading) {
     return (
@@ -68,6 +79,7 @@ export default function MyPage() {
       <section className="page">
         <h2>마이페이지</h2>
         <p className="page-desc">{error}</p>
+
         {!isLoggedIn && (
           <Link to="/login" className="button-link">
             로그인하러 가기
@@ -80,7 +92,9 @@ export default function MyPage() {
   return (
     <section className="page">
       <h2>마이페이지</h2>
-      <p className="page-desc">현재 로그인한 사용자 정보와 내가 작성한 리뷰 목록입니다.</p>
+      <p className="page-desc">
+        현재 로그인한 사용자 정보와 내가 작성한 리뷰 목록입니다.
+      </p>
 
       <div className="card mypage-card">
         <p><strong>이메일</strong>: {me?.email}</p>
